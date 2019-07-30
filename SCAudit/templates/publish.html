@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+    {% block content %}
+        <div>
+            <form action="{{url_for('publish')}}" method="post" enctype="multipart/form-data">
+              {{ form.csrf_token }}
+              <p>
+                  {{ form.advertImage.label }}<br>
+                  {{ form.advertImage }}<br>
+              </p>
+                <p><input type="submit" value="Publish Advert"></p>
+            </form>
+        </div>
+        <h2>{{msg}}</h2>
+        <a href="\home">Go Back</a>
+    {% endblock %}
