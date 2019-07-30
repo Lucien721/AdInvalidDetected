@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProofSpecification xmlns="http://www.zurich.ibm.com/security/idemix"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zurich.ibm.com/security/idemix ProofSpecification.xsd">
+
+	<Declaration>
+		<AttributeId name="id1" proofMode="unrevealed" type="int" />
+		<AttributeId name="id2" proofMode="unrevealed" type="int" />
+		<AttributeId name="id3" proofMode="unrevealed" type="int" />
+		<AttributeId name="id4" proofMode="unrevealed" type="int" />
+		<AttributeId name="id5" proofMode="unrevealed" type="int" />
+		<AttributeId name="id6" proofMode="unrevealed" type="int" />
+	</Declaration>
+
+	<Specification>
+		<Credentials>
+			<Credential credStruct="http://www.zurich.ibm.com/security/idmx/v2/testIssuer/CredStruct2.xml"
+				name="someRandomNameMatchingTheOneInTheProofSpec">
+				<Attribute name="attr1">id4</Attribute>
+				<Attribute name="attr2">id3</Attribute>
+				<Attribute name="attr3">id2</Attribute>
+				<Attribute name="attr4">id1</Attribute>
+				<Attribute name="attr5">id5</Attribute>
+				<Attribute name="attr6">id6</Attribute>
+			</Credential>
+			<Credential credStruct="http://www.zurich.ibm.com/security/idmx/v2/testIssuer/CredStruct3.xml"
+				name="someRandomNameMatchingTheOneInTheProofSpec">
+				<Attribute name="attr1">id2</Attribute>
+				<Attribute name="attr2">id5</Attribute>
+				<Attribute name="attr3">id1</Attribute>
+			</Credential>
+		</Credentials>
+
+		<EnumAttributes />
+
+		<Inequalities />
+
+		<Commitments />
+
+		<Representations>
+			<Representation name="randomRepName1">
+				<Exponent index="0"
+					base="74280263475874824370606552515147585195716049099260114535244970178607983602193500263585676170028819985742928829813382849206096578162419627357008532853031884414761827350882658890054307262691831198028736716288022836572009714209281723400781823283294111532769941561207614178463548503316357853980542195297318194591">id2</Exponent>
+				<Exponent index="1"
+					base="113031522864327407885380370523308624624174766999001492720118869821096545982946064191369285974811837314131297296854829099180790824007415055360419527645672194235195064858782817766064988480055118551474329240977039551353063621607388272893393003006032678684815755295571435633462946666286066815787149328601393393835">id3</Exponent>
+				<Exponent index="2"
+					base="60466356910044728800780505893551031037881414965908420322683676433672510957317630921672796055718176685250609376782697894666305159397711616672721330145283363433941094963979310068840972297820701178744454909288620905039118413936955387438067774453484048578483912960913750112141618888830768551104326064519328160124">id5</Exponent>
+			</Representation>
+		</Representations>
+
+		<Pseudonyms />
+
+		<VerifiableEncryptions />
+		
+		<Messages />
+
+	</Specification>
+
+</ProofSpecification>

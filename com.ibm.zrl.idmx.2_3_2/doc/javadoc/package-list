@@ -1,0 +1,15 @@
+com.ibm.zrl.credsystem
+com.ibm.zrl.credsystem.utils
+com.ibm.zrl.idmx.dm
+com.ibm.zrl.idmx.dm.structure
+com.ibm.zrl.idmx.issuance
+com.ibm.zrl.idmx.issuance.update
+com.ibm.zrl.idmx.key
+com.ibm.zrl.idmx.showproof
+com.ibm.zrl.idmx.showproof.ip
+com.ibm.zrl.idmx.showproof.pe
+com.ibm.zrl.idmx.showproof.predicates
+com.ibm.zrl.idmx.showproof.sval
+com.ibm.zrl.idmx.utils
+com.ibm.zrl.idmx.utils.perf
+com.ibm.zrl.idmx.ve

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CredentialStructure xmlns="http://www.zurich.ibm.com/security/idemix"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xsi:schemaLocation="http://www.zurich.ibm.com/security/idemix CredentialStructure.xsd">
+
+	<References>
+		<IssuerPublicKey>
+			http://www.issuer.com/ipk.xml
+		</IssuerPublicKey>
+	</References>
+	
+	<Attributes/>
+
+	<Features/>
+
+	<Implementation>
+		<AttributeOrder/>
+	</Implementation>
+
+</CredentialStructure>

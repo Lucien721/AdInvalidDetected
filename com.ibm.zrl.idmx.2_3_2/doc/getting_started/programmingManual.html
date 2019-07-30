@@ -1,0 +1,593 @@
+<div class="paragraph">
+<h1>Programming Manual</h1>
+<h2>Abstract</h2>
+<p>This document is the programmer’s manual for the Identity Mixer
+Library, version 2.3. It illustrates how to use some of the Java APIs in
+order to create and use Idemix certiﬁcates.</p>
+
+<h2>Glossary</h2>
+<ul>
+	<li><i>Attribute:</i> A typed and named data ﬁeld with a speciﬁc
+	value for particular identities. Examples are names, dates, addresses,
+	phone numbers, or citizenship.</li>
+	<li><i>Credential:</i> A set of attribute values signed by some
+	issuer.</li>
+	<li><i>Issuer:</i> Entity which issues (i.e., generates)
+	credentials. Each issuer publishes credential structures to
+	characterise the credentials it issues.</li>
+	<li><i>Credential structure:</i> Declaration of which attributes
+	are contained in a credential and who knows them. This is relevant
+	since attributes can be signed without the issuer learning their value
+	(i.e., blind signature generation).</li>
+	<li><i>Recipient:</i> Entity to receive and use a credential,
+	i.e., representing a user of the anonymous credential system.</li>
+	<li><i>Master secret:</i> A user’s master secret constitutes the
+	secret value that each credential is bound to. As such it is used in
+	the credential issuing and the proving protocol.</li>
+	<li><i>Proof specification:</i> An assertive statement of a fact,
+	relating an attribute to some constant.</li>
+	<li><i>Issuer signing key:</i> The issuer signing key. Composed of
+	the public key component, known to other entities, and the private key
+	component. The public key component point to the public group
+	parameters used when generating a key.</li>
+	<li><i>Proof:</i> Data item describing the information needed in a
+	zero-knowledge proof of knowledge made by the proof prover.</li>
+	<li><i>Prover:</i> Entity which generates a proof using a proof
+	specification together with private information (e.g., credentials).</li>
+	<li><i>Veriﬁer:</i> Entity which veriﬁes a given proof.</li>
+	<li><i>Group parameters:</i> Set of cryptographic parameters used
+	to generate issuer keys, to issue credentials, and to generate or to
+	verify proofs. The group parameters reference the system parameters.</li>
+	<li><i>System parameters:</i> A set of values defining the
+	cryptographic strength of the protocols. Most values define bit lengths
+	of certain parameters, some define probabilitie.</li>
+</ul>
+
+<!-- 
+<h2>Introduction</h2>
+<p>This document is not about cryptography; instead it aims at the
+practicioner to explain how to use the features of the Identity Mixer
+(aka. Idemix) library. The cryptographic theory can be found in [1, 2,
+4]. The details of the inner workings of the library implementing the
+Camenisch-Lysanskaya anonymous credential system is contained in [3].</p>
+<p>In a nut-shell, the Idemix library can be used for two kinds of
+operations:
+<ul>
+	<li><i>Credential generation:</i> the recipient initiates the <i>issuing
+	protocol</i> with the issuer. It submits a set of attributes which are
+	signed by the issuer. Attributes can be (1) <i>known</i> to both, the
+	issuer and the recipient, (2) <i>committed</i> to (meaning that the
+	recipient sends a commitment to the issuer), or (3) <i>hidden</i> from
+	the issuer.</li>
+	<li><i>Proof issuance and veriﬁcation:</i> Equipped with an Idemix
+	credential, a prover can generate a proof that is then validated
+	by the verifier. This may happens without revealing the values
+	of the attributes or the identity of the prover to the veriﬁer. Using
+	zero knowledge proofs of knowledge, the veriﬁer can still
+	assert the validity of the submitted claims and respond with a yes or
+	no answer.</li>
+</ul>
+
+<p>These are the most fundamental and frequent operations the
+library is to be used for. In addtion, there are a few supporting
+operations that have to be executed at first system usage.</p>
+
+<ul>
+	<li><i>Group parameters generation:</i> In order to
+	generate issuer public and private keys, and thus to enable all
+	subsequent operations, a set of public group parameters must be either
+	generated or re-used. Note that this must be done only once, thereby
+	establishing a system environment which can be re-used multiple times.</li>
+	<li><i>User master secret gneration:</i> The user master secret
+	key is used to generate new credentials and to bind proof issuance to
+	previously created credentials. Thus the related operations take the
+	user master secret as input argument. As the name implies, this data
+	item must be kept secret and is bound to a speciﬁc certiﬁcate recipient
+	and proof prover, i.e. a particular user. Once generated, a master
+	secret key can be used in subsequent transactions.</li>
+	<li><i>Issuer key generation:</i> When issuing a credential, the
+	issuer uses the issuer private key. The recipient
+	as well as prover and veriﬁer use the public component of
+	the issuer key. Again such keys need only to be generated once and can
+	be reused multiple times.</li>
+</ul>
+
+<!-- (pbi) I adapted the part above to v2.3.2 but it is unnecessary to publish 
+as this information is now contained in the protocol specification. 
+TODO (pbi) adapt the part below and extract the useful information (put it 
+into the protocol specification such that there is only one document to be 
+read!)
+ 
+<p>In the sections below, we shall describe the relevant library
+APIs and show how these operations can be performed. In various cases,
+the input to the operations is based on data represented as XML
+documents, embodying statements in the Identity Mixer Claims Language
+(ICL) [5].</p>
+<p>We assume that the reader is familiar with the Java Programming
+Language and uses an integrated development environment (IDE) such as
+the Eclipse work-bench in order to browse and use the library. The
+library makes use of JavaDoc for internal documentation; we shall not
+repeat all of this here.</p>
+
+<h2>Public Group Parameters</h2>
+<p>
+The Camenisch-Lysanskaya signature scheme is based on the speciﬁc properties of algebraic
+groups and certain operations in such groups. Before you can generate issuer keys, certiﬁcates,
+generate and verify proofs, you need to have a set of such public group parameters.</p>
+<p>These group parameters determine one particular algebraic, multiplicative3 , group (Z∗ ,
+Γ, see [3] for details) of order Γ, which must then be the same for subsequent operations. In
+other words, the group parameters determines the environment in which the operations of
+the library are performed and must be communicated to all operating entities.
+The group chosen here is used for information-theoretical hiding Pedersen commitments
+and not for the Identity Mixer certiﬁcates. Identity Mixer works in a strong RSA group
+where users are not privy of the group order (factorization of n). This group is used later for
+the commitment scheme.</p>
+<p>
+These group parameters already must respect certain constraints which inﬂuence the
+cryptographic strength of keys and certiﬁcates. These system parameters contain the lengths
+of key material, the probability of prime number generation, etc. and are grouped into a
+compound data item: the system parameters.</p>
+<p>
+Thus, this is the very ﬁrst operation to be performed: set up the system parameters and
+thereby determining the cryptographic strength of subsequent operations. See also [3] for the
+details of these system parameters.</p>
+<p>
+Programmatically, the Java class com.ibm.zrl.idemix.protocols.SystemParameters
+groups the relevant values. It must be instantiated by passing the relevant arguments to its
+constructor. These arguments can be embedded as constants in a Java program or be ob-
+tained from Java’s system properties (e.g. java.lang.System.getProperty()) or a similar
+conﬁguration environment. Fact is, that when generating public group parameters, ﬁrst a set
+of appropriate system parameters must be established and used with most of the library’s
+operations.</p>
+<p>
+Once the system parameters have been established, an instance of com.ibm.zrl.idemix.-
+protocol. PublicParameters can be created - assuming it is the ﬁrst time the library is used
+or a new set of public parameters is generated. Otherwise, an already created instance of
+PublicParameters can be re-activated from persistent storage.</p>
+<p>
+The library provides a convenience method in class com.ibm.zrl.idemix.protocols.-
+Utils.</p>
+<p>
+public static final PublicParameters loadOrGeneratePublicParameters(
+File publicParamFile,
+// the file to be written or read
+SystemParameters sp,
+// a set of system parameters
+SecureRandom rand
+// a secure random generator
+) throws IOException;</p>
+<p>
+The method’s signature ﬁrst argument is publicParamFile. This is a reference to a ﬁle. If
+the ﬁle does not exist, a new set of public group parameters is generated and saved to the
+ﬁle. The Java representation of the data is returned.</p>
+<p>
+If the ﬁle already exists, it is read and the data is converted from the persisted format
+into a Java object.</p>
+<p>
+The argument sp is only used when a new set of public group parameters is generated.
+See [3] or the accompanying JavaDoc documentation for details on the arguments to class
+SystemParameters’s constructor. When instantiating com.ibm.zrl.idemix.protocols.-
+SystemParameters, we recommend using the below values:</p>
+<p>
+public final static SystemParameters sysParams = new SystemParameters(
+2048, // l_n
+1632, // l_capGamma
+256, // l_rho
+256, // l_m
+256, // lPrime_m
+597, // l_e
+120, // lPrime_e
+2724, // l_v
+80,
+// l_statzk
+160, // l_k
+256, // l_H
+80,
+// l_r
+80
+// l_primeProbg
+);</p>
+<p>
+Weaker values impact the cryptographic strength of the solution and thus are not recom-
+mended.</p>
+<p>
+A secure random generator is also needed to generate a new set of public group parameters.
+This is passed as the last argument rand, which is ignored when creating a new set of public
+parameters into a newly written ﬁle.</p>
+
+<h2>Issuer Key Generation</h2>
+<p>In order to create a certiﬁcate and also when using a previously created certiﬁcate, the issuer
+key is needed. Recall from section 2 that certiﬁcate generation involves two parties: the
+certiﬁcate recipient and the certiﬁcate issuer (the details on how to use these abstractions are
+given in section 6). The certiﬁcate issuer must have knowledge of the public and the private
+components of the issuer key. All other parties, i.e. the certiﬁcate recipient, a proof prover,
+and a proof veriﬁer, will need only the public key of the issuer key.</p>
+<p>
+The components which make up the issuer key are described in [3]. Of importance is the
+set R = {R1 , . . . , Rl }. This is a set of big-integer numbers; for details see the relevant section
+in [3]. The cardinality l of that set is important: any certiﬁcate to be issued with a given key
+can have at most l − lres user level attributes.</p>
+<p>
+For a programmer, class com.ibm.zrl.idemix.protocols.Utils provides the conve-
+nience method to generate or read an issuer key from a ﬁle:</p>
+<p>
+public static final ProofCarryingKeyPair loadOrGenerateKeyPair(
+File keyPairFile,
+// the file to be written or read
+PublicParameters pubParams, // a set of public group parameters
+int nbrAttrs,
+// max. nbr. of non-reserved attributes
+SecureRandom rand
+// secure random generator
+) throws IOException, ClassNotFoundException;</p>
+<p>
+The parameters to the above method should be rather clear by now.</p>
+<ul>
+<li>keyPairFile: the ﬁle which is either created, if it does not exist, or is read. When a
+new ﬁle is written, the binary representation of the issuer key pair is saved to the ﬁle.</li>
+<li>pubParams: a set of public parameters. See section 3 how to get these. When reading
+the issuer key from an already existing ﬁle, this parameter is ignored.</li>
+<li>nbrAttrs: this corresponds to l − lres - the maximum number of certiﬁcate attributes
+for certiﬁcates which can be signed with the issuer key. When reading from an already
+existing ﬁle, this parameter is ignored.</li>
+<li>rand: a secure random number generator. This parameter is also ignored when reading
+the issuer key from an already existing ﬁle.</li>
+</ul>
+
+<p>
+One important point to mention here is that the key generation binds the public group
+parameters and thus the system parameters to the issuer key. Hence, whenever the key is to
+be used in generation of certiﬁcates or issuance and veriﬁcation of proofs the public group
+paramters in eﬀect at the time of use must be identical with the parameters used for key
+generation.</p>
+<p>
+Depending on the strengths of the system parameters in eﬀect during key generation, the
+key generation may take a noticeable amount of time. For RSA modulus size ln = 2048,
+expect 10-20 minutes depending on the used hardware.</p>
+<p>
+Similar to other data types, the library provides methods to save an externalized repre-
+sentation of ProofCarryingKeyPair.</p>
+<p>
+public String outputXml();
+and
+public void writeObject(
+DataOutputStream out
+) throws IOException;
+// storing binary key data
+</p>
+<p>The class ProofCarryingKeyPair also provides a constructor to read-in a parameter set
+from a data input stream.
+</p>
+<p>
+public ProofCarryingKeyPair(
+DataInputStream in // data input stream
+) throws IOException;
+</p>
+<p>
+When used, the constructor reads in the issuer proof key, containing public and private
+components. The public component, in addition, contains the set of public group parameters
+in effect during key generation.
+</p>
+
+<h2>User Master Secret</h2>
+<p>Another data entity needed in various operations of the library is the user master secret. It
+is needed when creating certiﬁcates and when tying proof assertions to certiﬁcates.</p>
+<p>
+Although one master secret per user would be suﬃcient, a user may well maintain a few
+of these.</p>
+<p>
+Again, these entities are either generated or re-used from a previously persisted ﬁle. Thus
+the already known class com.ibm.zrl.idemix.protocols.Utils provides an appropriate
+convenience method to generate or read a user master secret from a ﬁle.</p>
+<p>
+public static final UserMasterSecret loadOrGenerateMasterSecret(
+final String fileName,
+// name of file to be written or being read
+SecureRandom rand,
+// a secure random number generator
+PublicParameters pubParams // public group parameters
+) throws IOException;
+</p>
+<p>The parameters to the above method are analoguous, respectively identical, to the ones
+used in previous sections:</p>
+<ul>
+<li>fileName: a ﬁle name used in either reading or writing the user master secret.</li>
+<li>rand: a secure random number generator instance. Ignored when reading an already
+existing user master secret.</li>
+<li>pubParams: a set of public parameters. See section 3 how to get these. When reading
+the issuer key from an already existing ﬁle, this parameter is ignored.</li>
+</ul>
+<p>
+Unlike the data items described in the previous sections, the user master secret, embod-
+ied by com.ibm.zrl.idemix.protocols.UserMasterSecret can only be externalized to a
+binary representation.</p>
+<p>
+public void writeObject(
+DataOutputStream out
+) throws IOException;
+// storing the binary key data
+To restore a user master secret without using com.ibm.zrl.idemix.protocols.Utils,
+the UserMasterSecret class has an appropriate constructor:
+public UserMasterSecret(
+DataInputStream in
+) throws IOException;
+// input data stream to read from
+</p>
+
+<h2>Issuing Certiﬁcates</h2>
+<p>
+In the previous sections, we have shown how to obtain some ingredients to further operations
+of the library. This section illustrates how a certiﬁcate is generated.</p>
+<p>
+Figure 1 illustrates the protocol executed between certiﬁcate recipient and certiﬁcate
+issuer. We can distinguish following steps:</p>
+<ol>
+<li>Instantiation of a certiﬁcate recipient: The certiﬁcate recipient is the entity receiving
+the generated certiﬁcate. It supplies the speciﬁcation of the recipient’s issuance asser-
+tion, the user’s master secret, a set of public group parameters and a secure random
+generator.</li>
+<li>Instantiation of a certiﬁcate issuer: The certiﬁcate issuer is instantiated with the issuer’s
+issuance assertion, the identical set of public group paramters and a secure random
+generator.</li>
+<li> Message exchanges between recipient and issuer: Five operations are performed between
+recipient and issuer which exchange three messages. The ﬁrst, third, and last operation
+is performed by the recipient; operational rounds two and four are run by the issuer.
+The message format exchanged is abstracted away by the use of an appropriate Java
+class com.ibm.zrl.idemix.credsystem.Message.</li>
+<li>Extraction of certiﬁcate: The ultimate step is to extract the certiﬁcate on the recipient’s
+side and store it away for later use; be it in binary or XML format.</li>
+</ol>
+
+<p>The above protocol can be run with the following Java code:
+// open the assertions for issuer and recipient
+FileInputStream issuerSpecIn =
+new FileInputStream(new File(ISSUER_ASSERTION_FILE_NAME))
+FileInputStream recipientSpecIn =
+new FileInputStream(new File(RECIPIENT_ASSERTION_FILE_NAME));
+// instantiate the certificate recipient
+IssueCertificateRecipient recipient =
+new IssueCertificateRecipient( recipientSpecIn, masterSecret,
+pubParams, rand);
+// instantiate the certificate issuer
+IssueCertificateIssuer issuer =
+new IssueCertificateIssuer(issuerSpecIn, pubParams, rand);
+// run round0 of recipient...
+Message msg0 = recipient.round0();
+// run round0 of issuer...
+Message msg1 = issuer.round0(msg0);
+// run round1 of protocol
+Message msg2 = recipient.round1(msg1);
+// run round2 of protocol
+Message msg3 = issuer.round2(msg2);
+// run round3 of protocol
+recipient.round3(msg3);
+// extract certificate
+HlNodeCertificate cert = recipient.getCertificate();
+if (recipient.getErrorCode() != 0 || issuer.getErrorCode() != 0) {
+// error handling
+} else {
+System.out.println( cert.outputXML()); // print certificate as XML
+}
+</p>
+<p>The above Java code is rather straightforward. Some of the complexity is abstracted away in
+the issuer and recipient assertions. These are passed as XML data converted into an input
+stream. The library parses these XML documents and builds up internal data-structures
+which are used in the issuance protocol. See [5] for details of the XML syntax for certiciate
+recipient and certiﬁcate issuer assertions.</p>
+<p>
+The constants ISSUER ASSERTION FILE NAME and RECIPIENT ASSERTION FILE NAME in-
+dicate some ﬁle names under which the XML assertions can be found. This are situation
+speciﬁc and only illustrative.</p>
+<p>
+The cryptographic arguments to the constructors of classes com.ibm.zrl.idemix.cred-
+system.IssueCertificateRecipient and com.ibm.zrl.idemix.credsystem.IssueCerti-
+ficateIssuer have been described in sections 3 and 5.</p>
+<p>
+The above code sample refers to class com.ibm.zrl.idemix.credsystem.HlNodeCerti-
+ficate. This data type holds the information describing the generated certiﬁcate. For details,
+refer to the accompanying Java documentation.</p>
+<p>
+Note: certiﬁcates are generated with a globally unique id. This allows the recipient to refer
+to newly generated certiﬁcates when persisting them. However, these certiﬁcate ids must
+be obfuscated when certiﬁcates are to leave the recpient’s realm. That is, when inserting
+certiﬁcates into XML documents, an alias local to the XML document under construction
+must be used to avoid traceability of certiﬁcates outside the recipient’s realm. It is the
+responsibility of the certiﬁcate recipient to perform such anonymizing aliasing of certiﬁcate
+ids.</p>
+<p>
+The constructors of certiﬁcate recipient and certiﬁcate issuer have the following signatures:</p>
+<p>
+public IssueCertificateRecipient(
+final InputStream assertionXML,
+final UserMasterSecret masterSecret,
+final PublicParameters publicParameters,
+final SecureRandom random)
+throws ParserConfigurationException, SAXException, IOException;
+and
+public IssueCertificateIssuer(
+final InputStream assertionXML,
+final PublicParameters publicParameters, final SecureRandom random)
+throws ParserConfigurationException, SAXException, IOException;</p>
+<p>
+The arguments are rather self-explanatory, with the exception of the XML assertion input
+streams. These express the values to be certiﬁed and which certiﬁcate speciﬁcations - in-
+cluding the issuer’s signing key - information are to be used. The formats are described
+in [5].</p>
+<p>
+The messages exchanged between the protocol entities are based on the Java class com.-
+ibm.zrl.idemix.credsystem.Message. It is a ﬂexible envelope for the data required in the
+protocol steps. For details, refer to [3] and the Java code of the library.
+</p>
+
+<h2>Proof Issuance and Verﬁciation</h2>
+<p>Armed with an Idemix certiﬁcate, it is possible to generate proofs on speciﬁc statements and
+have these veriﬁed without revealing sensitive information to the veriﬁer. The cryptographic
+techniques used to achieve this functionality are described elsewhere ( [1, 2, 4]).</p>
+<p>
+The protocol run between proof prover and proof veriﬁer is shown in ﬁgure 2. It is
+deceptively simple when omitting the cryptographic details.</p>
+<ol>
+<li>Instantiation of veriﬁer and prover: Both protocol entities are instantiated via calls to
+the appropriate constructors. As arguments, the constructors require the user master
+secret (prover only), the public group parameters, and a secure random number gener-
+ator. The ﬁrst and crucial argument however is the prover’s respectively the veriﬁer’s
+assertion: it expresses which claims are to be proven relative to which previously issued
+Idemix certiﬁcates. (The details of the XML syntax for proof prover XML assertions
+can be found in [5].)<br/>
+Note that the values of the user master secret (prover only) as well as the public group
+parameters must be the same as the values used in issuing the certiﬁcates embedded
+in the proof prover’s assertion.</li>
+<li>Veriﬁer’s nonce: a unique nonce - to guard against re-play attacks - is queried from the
+proof veriﬁer instance and passed to the proof prover.</li>
+<li>Proof issuance: The prover generates the proof statement which is extracted and passed
+onto the proof veriﬁer.</li>
+<li>Proof veriﬁcation: The veriﬁer uses the proof it as input arguments to its round1()
+operation which as a side-effect computes success or failure of the proof veriﬁcation.
+</li>
+</ol>
+<p>
+In Java terms, the following code retraces the protocol of ﬁgure 2.
+</p>
+<p>
+FileInputStream verifierSpecIn =
+new FileInputStream( new File( VERIFIER_SPEC_FILE_NAME));
+FileInputStream proverSpecIn =
+new FileInputStream( new File( PROVER_SPEC_FILE_NAME));
+// obtain a unique verifier nonce to avoid replays
+APInteger nonce = ProveVerifier.getVerifierNonce(pubParams, rand);
+ProveProver prover =
+new ProveProver(proverSpecIn, masterSecret, pubParams, rand);
+ProveVerifier verifier =
+new ProveVerifier(verifierSpecIn, pubParams, rand, nonce);
+try {
+// verifier.getNonce() == nonce
+prover.computeProof( verifier.getNonce());
+} catch ( Exception e) {
+// error handling
+}
+CryptographicProof cryptoProof = prover.getProof();
+if ( cryptoProof.getMessage().getErrorCode() == 0) { // proof ok
+byte[] cryptoProofByteArr = cryptoProof.toBinary();
+// simulate going over the wire
+CryptographicProof cryptoProofNew =
+new CryptographicProof( cryptoProofByteArr);
+verifier.round1( cryptoProofNew);
+}
+if ( verifier.isSuccess()) {
+// success
+} else {
+// failure
+}</p>
+<p>
+Similar to the case of certiﬁcate issuance (section 6), the bulk of the arguments to the
+operations are passed as XML data containing the proof assertions, for both - the prover and
+the veriﬁer. See [5] for the details of the XML syntax and semantics.</p>
+<p>
+Note the conversion of the cryptographic proof into an array of bytes cryptoProof.-
+toBinary() and its injection into the verﬁer’s round1().</p>
+<p>
+When completed, the success or failure is extracted with the verifier.isSuccess()
+method call.</p>
+<p>
+The various method signatures are described in the Java documentation accompanying
+the library. We here only indicate the constructor signatures, as these are slightly more
+complex.</p>
+<p>
+public ProveProver(
+final InputStream assertionXML,
+final UserMasterSecret masterSecret,
+final PublicParameters publicParameters,
+final SecureRandom random
+) throws ParserConfigurationException, SAXException, IOException;
+and
+public ProveVerifier(
+final InputStream assertionXML,
+final PublicParameters publicParameters,
+final SecureRandom random,
+final APInteger nonce)
+throws ParserConfigurationException, SAXException, IOException;</p>
+<p>
+Amongst the arguments to the ProveProver() constructor, notice the masterSecret. This
+must be identical with the value used to generate the certiﬁcate contained in the proof
+prover’s assertion - passed as an XML containing input stream. The same applies for the
+publicParameters arguments used in the constructors for both, the ProveProver and the
+ProveVerifier: their value must also be identical with the value used during certiﬁcate
+issuance.</p>
+<p>
+The nonce argument for the ProveVerifier constructor is used to detect replays and
+must be obtained before using the constructor. The corresponding (static) method is Prover-
+Verifier.getVerifierNonce( PublicParameters, SecureRandom) which returns an ap-
+propriate random nonce.</p>
+<p>
+The library also provides a constructor for class ProveVerifier which implicitly generates
+the veriﬁer’s nonce. Its signature is</p>
+<p>
+public ProveVerifier(
+final InputStream assertionXML,
+final PublicParameters publicParameters,
+final SecureRandom random)
+throws ParserConfigurationException, SAXException, IOException;</p>
+<p>
+Depending on the embedding of the proof generation and veriﬁcation, either constructor for
+the veriﬁer can be used - obtaining the veriﬁer nonce a-priori allows to delay generation of
+the veriﬁer assertion until after proof generation which is needed when the prover and the
+veriﬁer are not co-resident in a same address space. It then becomes possible to pass the
+nonce and the proof in a single message from prover to veriﬁer.</p>
+<p>
+For both, the proof prover and the proof veriﬁer, the XML formatted assertions, passed
+into the respective constructors, contain the claim statements to be proven, respectively
+veriﬁed. See [5] for syntax and semantics.</p>
+<p>
+The other operations used during proof issuance and veriﬁcation are documented with
+the Java documentation accompanying the library.</p>
+
+<h2>Summary</h2>
+
+<p>In the previous sections we have described the speciﬁc steps needed to manipulate Idemix
+related data and operations. Figure 3 attemps to recap the overall data ﬂow for the scenarios
+of certiﬁcate generation and proof issuance and veriﬁcation. Note that issuer key generation
+is not explicitly shown.</p>
+<p>
+The key data elements and their dependencies are illustrated in ﬁgure 3. We have used
+dashed lines to indicate data inclusion; solid arrows denote data use as method arguments.
+Data exchanges (protocols) between active entities are shown as double-headed, dashed ar-
+rows.</p>
+<p>
+The public group parameters are used pervasively throughout the environment. The
+user master secret is used during certiﬁcate issuance and proof generation, by the certiﬁcate
+recipient and the proof prover respectively.</p>
+<p>
+The issuer signing key is used indirectly by inclusion in the XML assertions for certiﬁcate
+reception, certiﬁcate issuance, proof generation and proof veriﬁcation. Note that the private
+issuer key is only included in the certiﬁcate issuer’s assertion; see [5] for details.
+Certiﬁcate speciﬁcations are needed for certiﬁcate issuance and proof generation - veriﬁ-
+cation. Their XML representation is included in the respective assertions, as well as in the
+assertions for proof generation and veriﬁcation.</p>
+<p>
+Certiﬁcate data is embedded in proof generation and proof veriﬁcation assertions.
+The claims included in the various assertions are not represented in above diagram. These
+express the predicates on attributes and constant values. It is up to any application, using ap-
+propriate Java packages, to generate correctly formatted assertion grouping claims, certiﬁcate
+speciﬁcations, and - if necessary - certiﬁates. The library accepts the XML representations
+of assertion as input stream arguments.</p>
+<p>
+Not shown in ﬁgure 3 are uses of the secure random generators.</p>
+
+<h2>References</h2>
+
+[1] Jan Camenisch and Anna Lysyanskaya. Efficient non-transferable anonymous
+multi-show credential system with optional anonymity revocation. Technical Report
+Research Report RZ 3295, IBM Research Division, November 2000.
+[2] Jan Camenisch and Anna Lysyanskaya. Efficient non-transferable anonymous
+multi-show credential system with optional anonymity revocation. In Birgit Pﬁtzmann,
+editor, Advances in Cryptology — EUROCRYPT 2001, volume 2045 of LNCS, pages
+93–118. Springer Verlag, 2001.
+[3] Jan Camenisch, Dieter Sommer, and Greg Zaverucha. Cryptographic protocols of the
+identity mixer library. 2008.
+[4] Marit Hansen, Peter Berlich, Jan Camenisch, Sebastian Clauß, Andreas Pﬁtzmann, and
+Michael Waidner. Privacy-enhancing identity management. Information Security
+Technical Report, 9(1):35–44, 2004.
+[5] IBM Zurich Research Laboratory. Identity mixer claims language, 1.0. 2008.
+-->
+
+</div>

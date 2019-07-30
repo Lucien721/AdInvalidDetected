@@ -1,0 +1,104 @@
+<div class="paragraph">
+<h1>Getting the Code and Playing with it!</h1>
+<h2>Environment..</h2>
+<p>We suggest to use the <a href="http://www.eclipse.org/">Eclipse
+IDE</a> as development platform (e.g., <a
+	href="http://www.eclipse.org/downloads/">Eclipse IDE for Java
+Developers</a>). You may use another package with Java development
+functionality.</p>
+
+<h2>Getting the Code..</h2>
+<p>We provide a stable version of the library as an Eclipse project
+(ZIP file), which includes the source files. In addition we provide a
+JAR file, which you can more easily use within your Java application.
+You can download the files from the <a
+	href="http://prime.inf.tu-dresden.de/idemix/">PrimeLife</a> server. The
+simplest way to start exploring the <i>Identity Mixer</i> library is to
+use the ZIP file and import it into Eclipse as an ''existing project''
+into you Eclipse workspace.</p>
+
+<h2>Running the Test Cases..</h2>
+<p>First you have to change a URI such that it points to the
+required files residing on your file system. To do this you will have to
+change the parameter <u>BASE_LOCATION</u> that resides in <u>com.ibm.zrl.idmx.tests.idmx.TestIssuance</u>.
+You will have make it point to the location where the parameters (e.g.,
+system and group parameters) are located. On Windows this will have to
+be something like <i>file:///C:/Users/.../workspace/com.ibm.zrl.idmx.2_3_2/tests/com/ibm/zrl/idmx/tests/files/parameter/</i>
+on a UNIX based system the URI will rather be <i>file:///home/username/../parameter/</i>.
+Note that you will not have to change the <u>BASE_ID</u> as this must
+comply with the URI used in the example files.</p>
+<p>Now you should be ready to have a go with the issuance test
+cases. Go to the <u>TestIssuance</u> class and run all test cases.
+Running the library for the first time will make the system generate the
+required parameters. Thus, there are a number of error messages, which
+you can ignore. However, it is essential that the test cases verify! If
+they do not verify correctly, you will have to fix your system setup
+before you can continue! If the issuance process works correctly you
+should find several <i>Credential_n.xml</i> files in the folder <i>tests/files/credentials</i>.</p>
+<p>Having the credentials allows you to run the proof test cases -
+theoretically. However, there are some details that you have to take
+care of first.</p>
+<ul>
+	<li>If a new issuer key pair has been generated, those new bases
+	have to go into several proof specifications. First, the proof
+	specification <u>ProofSpecRep_Cred2Cred3.xml</u> specifies bases number
+	6, 5 and 4 of the issuer public key to used. Thus, you have to replace
+	the values in the proof specification with the corresponding bases
+	stored in <u>ipk.xml</u>. Second, the complete credential also makes
+	use of representations. More specifically, it specifies bases number 0
+	and 1 to be used. That is why you have to replace the values in <u>ProofSpec_CredComplete</u>
+	with the base number 0 and 1 from <u>ipk.xml</u>.</li>
+</ul>
+<p>Now you can run the test cases of the proving protocol. Note that
+after running all proof test cases you can run any test individually (if
+it is a verification test, it will simply use the <u>*_proof.xml</u> and
+<u>*_nonce.xml</u> files serialised during the previous run of the
+proving protocol).</p>
+<p>The last step is to run the tests from <u>TestUpdate</u>. Those
+test will update values from several credentials. Note that some
+credentials expire after a certain time. They MUST be updated to verify
+correctly again. We do not guearantee to implement updates for all
+credentials. Therefore you might have to re-issue selective credentials
+if they expire.</p>
+</div>
+
+<div class="paragraph">
+<h1>Understanding what is going on!</h1>
+<h2>Architectural Ideas..</h2>
+<p>The Identity Mixer anonymous credential system is documented in
+various publications. We maintain the blog <a
+	href="http://idemix.wordpress.com">idemix@wordpress</a> to keep collect
+all necessary information.</p>
+<p>When it comes to documentation of the current code, there is a
+document describing the language that we use (<a
+	href="http://www.zurich.ibm.com/~pbi/pub/BC2010-Mixing_Identities_with_Ease.pdf">Mixing
+Identities with Ease</a>). In addition, we maintain a specification of the
+implemented library, which is distributed together with the code. As by
+now you have the test cases running, the best way of understanding the
+code is probably by starting a simple test case in debugging mode and
+follow the commands executed when running the code.</p>
+</div>
+
+<div class="paragraph">
+<h1>Notes!</h1>
+<h2>Logging..</h2>
+<p>We use the standard Java (since Java 1.4) logging mechanism. We
+mainly use the following levels:</p>
+<ul>
+	<li>Level.INFO: General information.</li>
+	<li>Level.FINE: Detailed debuging information.</li>
+	<li>Level.SEVERE: Error information.</li>
+</ul>
+
+<h2>Debugging Mode..</h2>
+<p>When running the test cases or otherwise debugging the library,
+there is a field <u>DEVELOPING</u> in the class <u>com.ibm.zrl.idmx.utils.Constants</u>.
+Setting this field to true fixes the seed of the random generation
+mechanism - thus you can run the tests several times using the same
+randomness values.</p>
+</div>
+
+
+
+
+

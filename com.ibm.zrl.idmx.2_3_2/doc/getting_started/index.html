@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="owner" content="Patrik Bichsel" />
+<meta name="author" content="Patrik Bichsel" />
+<meta name="publisher" content="Patrik Bichsel" />
+<meta name="copyright" content="IBM Research Zurich" />
+
+<meta name="review" content="20101220" />
+<meta name="security" content="public" />
+<meta name="audience" content="all" />
+<meta name="expires" content="NEVER" />
+
+
+<meta name="description" content="identity mixer" />
+
+<meta name="keywords"
+	content="identity mixer, idemix, privacy, security, cryptography, identity management" />
+
+<meta name="abstract" content="identity mixer, idemix, idmx" />
+<meta name="page-topic"
+	content="introduction for developers using identity mixer" />
+<meta name="page-type"
+	content="introduction to the identity mixer library" />
+<meta name="robots" content="INDEX,FOLLOW" />
+
+<title>Identity Mixer - Getting Started!</title>
+
+<link href="idmx_utopia.css" type="text/css" rel="stylesheet" />
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="idmx_utopia_ie7.css">
+<![endif]-->
+
+<script>
+	function clickElement(name) {
+		var el = document.getElementById(name);
+		if (!el.onclick || (el.onclick() != false))
+			location = el.href;
+	}
+</script>
+
+
+<script>
+	function removeElement(el) {
+		el.parentNode.removeChild(el);
+	}
+</script>
+<script language="JavaScript" src="csi.js"></script>
+<script language="JavaScript" src="mailingList.js"></script>
+
+</head>
+
+<body>
+
+<div id="main">
+<div id="head"><img id="header_img" src="img/IMG_4523_cut.png"
+	alt="idemix" /> <img id="header_banner" src="img/head_banner.png"
+	alt="Identity Mixer" /></div>
+
+<div id="language">
+<ul>
+	<li class="selected right left"><a href="">en</a></li>
+	<!--<li class="left"><a href="">de</a></li>
+	 <li><a href="">fr</a></li>
+	<li><a href="">it</a></li> -->
+</ul>
+</div>
+
+<div id="menu">
+<ul>
+	<li class="menuItem, selected" onclick="clickElement('relNotes');"><a
+		id="relNotes" href="index.html">Introduction</a></li>
+	<li class="menuItem" id="appDeveloper"
+		onclick="csi('container', 'howtoAppDeveloper.html', this);"><a
+		href="#self">Application Developer</a></li>
+	<li class="menuItem" onclick="clickElement('spec');"><a id="spec"
+		href="ProtocolSpecification_2-3-2.pdf">Protocol Specification</a></li>
+	<li class="menuItem" onclick="clickElement('license');"><a
+		id="license" href="Identity Mixer License 1.2.pdf">License</a></li>
+	<li class="menuItem" onclick="csi('container', 'about.html', this);"><a
+		href="#self">About</a></li>
+</ul>
+</div>
+
+<div id="container">
+<div class="paragraph">
+<h1>Identity Mixer - Introduction</h1>
+<p>We all increasingly use electronic services in our daily lives.
+To do so, we have no choice but to provide plenty of personal
+information for authorisation, billing purposes, or as part of the terms
+and conditions of service providers. Dispersing all these personal
+information erodes our privacy and puts us at risk of abuse of this
+information by criminals.</p>
+<p>Identity Mixer (idemix) allows users to minimise the personal
+data they have to reveal in such transactions. For instance, if
+electronic identity (eID) cards were realised with idemix, then
+teenagers possessing such eID cards could log onto a teenage chat room
+just proving that they are indeed 12-15 years of age without revealing
+any other information stored on the card such as their name or address.</p>
+
+<p>The Identity Mixer cryptographic library offers the all the
+cryptographic algorithms to realise such anonymous authentication. This
+comprises the functionality for the issuer, client, and service
+provider. The library implements the credential system of Camenisch and
+Lysyanskaya [see idemix.wordpress.com for further information]. In
+addition to the basic credential system, the following additional
+features are currently supported for dealing with attribute contained in
+a credential when proving possession of credentials:</p>
+<ul>
+	<li>Selective release of the attributes (minimal disclosure);</li>
+	<li>Proving predicates over some of attributes; and</li>
+	<li>Verifiable encryption and anonymity revocation (useful for
+	conditional anonymity) of some attributes.</li>
+</ul>
+
+<p>On top of that, the library also allows one to prove possession
+of several credentials at the same time and to state various relations
+among the attributes contained in these credentials.</p>
+
+<h1>Identity Mixer - Glossary</h1>
+<ul>
+	<li><i>Attribute:</i> A typed and named data field with a specific
+	value for particular identities. Examples are names, dates, addresses,
+	phone numbers, or citizenship.</li>
+	<li><i>Credential:</i> A set of attribute values signed by some
+	issuer.</li>
+	<li><i>Issuer:</i> Entity which issues (i.e., generates)
+	credentials. Each issuer publishes credential structures to
+	characterise the credentials it issues.</li>
+	<li><i>Credential structure:</i> Declaration of which attributes
+	are contained in a credential and who knows them. This is relevant
+	since attributes can be signed without the issuer learning their value
+	(i.e., blind signature generation).</li>
+	<li><i>Recipient:</i> Entity to receive and use a credential,
+	i.e., representing a user of the anonymous credential system.</li>
+	<li><i>Master secret:</i> A user’s master secret constitutes the
+	secret value that each credential is bound to. As such it is used in
+	the credential issuing and the proving protocol.</li>
+	<li><i>Proof specification:</i> An assertive statement of a fact,
+	relating an attribute to some constant.</li>
+	<li><i>Issuer signing key:</i> The issuer signing key. Composed of
+	the public key component, known to other entities, and the private key
+	component. The public key component point to the public group
+	parameters used when generating a key.</li>
+	<li><i>Proof:</i> Data item describing the information needed in a
+	zero-knowledge proof of knowledge made by the proof prover.</li>
+	<li><i>Prover:</i> Entity which generates a proof using a proof
+	specification together with private information (e.g., credentials).</li>
+	<li><i>Verifier:</i> Entity which verifies a given proof.</li>
+	<li><i>Group parameters:</i> Set of cryptographic parameters used
+	to generate issuer keys, to issue credentials, and to generate or to
+	verify proofs. The group parameters reference the system parameters.</li>
+	<li><i>System parameters:</i> A set of values defining the
+	cryptographic strength of the protocols. Most values define bit lengths
+	of certain parameters, some define probabilitie.</li>
+</ul>
+</div>
+
+<div class="paragraph">
+<h1>Identity Mixer - Release Notes</h1>
+
+<h2>Release 2.3.2 (December 2010)</h2>
+<ul>
+	<li><i>Improved architecture of update machanism:</i> Now you can
+	specify which attributes will be updated. During the issuance process a
+	location where the updates can be fetched from is defined and all
+	updates are published at the given location.</li>
+	<li><i>Added OR proof for prime encoded attributes:</i> In
+	addition to the AND, and NOT operators which can be used for set
+	membership proofs, we now support the OR opperator.</li>
+	<li><i>URI support:</i> We changed the file handling such that it
+	uses URIs instead of strings to encode the location of a file.</li>
+	<li><i>'Shadow location':</i> We support loading of elements such
+	as credential structures or public keys such that they are combined
+	with locations that they do not originate from. This allows us to keep
+	files (and location indications therein) static while the actual
+	location of the files changes.</li>
+	<li><i>Serialisation:</i> We support the serialisation of all
+	Idemix specific elements to XML objects. Serialisation of not
+	Idemix-specific elements (e.g., Commitments, Representations) is not
+	(yet) supported.</li>
+</ul>
+</div>
+</div>
+
+<div id="disclaimer">
+<p>designed for: <img src="img/firefoxLogo.png" height="22px" /><!-- <img src="img/chromeLogo.jpg" height="22px" /> --></p>
+<p>compliant: <img src="img/vcss-blue.gif" height="22px" /></p>
+</div>
+
+</div>
+</body>
+</html>

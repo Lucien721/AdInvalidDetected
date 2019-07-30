@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<VerifiableEncryptionOpening xmlns="http://www.zurich.ibm.com/security/idemix" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.zurich.ibm.com/security/idemix VerifiableEncryptionOpening.xsd">
+  <Locations>
+    <VEPublicKeyLocation>http://www.zurich.ibm.com/security/idmx/v2/testTrustedParty/vepk.xml</VEPublicKeyLocation>
+  </Locations>
+  <Elements>
+    <Message>1313</Message>
+    <r>3739323913336417956143501418286627260746661024799894693422762244436939614000260842891763939435071771334547105541759110220343713599905178916158481174070178074536415731499842564575954135539191376406162707490663333853565991161689895833938222209738427321470470054547565088133767689588846521944531863196337565135</r>
+    <Label>8405871848956469194822056536482389885716323069902230794807375833616346732721</Label>
+  </Elements>
+</VerifiableEncryptionOpening>

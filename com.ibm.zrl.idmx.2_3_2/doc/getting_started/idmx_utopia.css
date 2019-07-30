@@ -1,0 +1,285 @@
+/*#############################################################
+Name: Identity Mixer
+Date: 2011-01-14
+Description: Simple issuer theme used for Identity Mixer.
+Author: Patrik Bichsel
+URL: http://www.zurich.ibm.com/~pbi/identityMixer_gettingStarted/
+#############################################################*/
+html {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 840px;
+	margin: auto;
+	text-align: center;
+	background: #fff repeat center;
+}
+
+#main {
+	margin: 10px auto;
+	padding: 30px;
+	font-family: helvetica, arial, sans-serif;
+	text-align: left;
+	border: 1px solid #aaa;
+	-moz-box-shadow: 4px 4px 6px #aaa;
+	-webkit-box-shadow: 4px 4px 6px #aaa;
+}
+
+#head {
+	border-bottom: 1px solid #999;
+	margin-right: -30px;
+	margin-left: -30px;
+	height: 50px;
+	width: 840px;
+}
+
+#header_img {
+	height: 80px;
+	width: 73%;
+	margin-top: -30px;
+	padding: 0;
+	float: left;
+}
+
+#header_banner {
+	height: 80px;
+	margin-top: -30px;
+	padding-right: 15px;
+	float: right;
+}
+
+#language,#menu {
+	margin-right: -30px;
+	margin-left: -30px;
+}
+
+#language {
+	background: #ddd;
+	height: 24px;
+}
+
+#language ul {
+	width: 100%;
+	background: #ddd;
+	text-decoration: none;
+	float: right;
+	list-style-type: none;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding: 0px;
+}
+
+#language li {
+	border-left: 1px solid #999;
+	border-bottom: 1px solid #999;
+	float: right;
+	padding: 2px 5px;
+	width: 15px;
+	font-size: small;
+	text-align: center;
+	float: right;
+}
+
+#language li.selected {
+	font-weight: bold;
+	background: #eee;
+}
+
+#language li.right {
+	-moz-border-radius-bottomright: 5px;
+	border-bottom-right-radius: 5px;
+	border-right: 1px solid #999;
+	margin-right: 5px;
+}
+
+#language li.left {
+	-moz-border-radius-bottomleft: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+#language a,a:visited,a:hover {
+	text-decoration: none;
+	color: black;
+}
+
+#language li:hover {
+	font-weight: bold;
+}
+
+#menu {
+	background: #ddd;
+	padding-top: 5px;
+	clear: both;
+}
+
+#menu ul {
+	border-bottom: 1px solid #999;
+	height: 33px;
+	margin: 0px;
+	clear: both;
+	list-style-type: none;
+}
+
+#menu a {
+	color: black;
+	text-decoration: none;
+}
+
+#menu li {
+	background: #ccc;
+	border: 1px solid #999;
+	height: 25px;
+	padding: 7px 10px 0px 10px;
+	margin-right: 5px;
+	font-size: 0.9em;
+	float: left;
+}
+
+#menu li.selected {
+	background: #fff;
+	border-bottom: 1px solid #fff;
+}
+
+#menu li:hover {
+	background: -moz-linear-gradient(top, #eee, #fff);
+	background: -webkit-gradient(linear, left top, left bottom, from(#eee),
+		to(#fff) );
+}
+
+#menu li,#menu li.selected,#menu li:hover {
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+#container {
+	
+}
+
+h1 {
+	color: #454545;
+	text-shadow: 2px 2px 5px #ddd;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+	clear: right;
+	padding: 25px 20px 5px 20px;
+	margin-left: -20px;
+	margin-top: 0;
+	font-size: 2em;
+}
+
+h2 {
+	color: #454545;
+	text-shadow: 1px 1px 2px #999;
+	text-align: left;
+	padding: 0px;
+	margin-top: 5px;
+	margin-bottom: -10px;
+	font-size: 1.5em;
+}
+
+h3 {
+	margin-bottom: -5px;
+}
+
+p {
+	padding: 0px 10px;
+	text-align: left;
+}
+
+a {
+	color: #111;
+}
+
+a:visited {
+	color: #444;
+}
+
+#disclaimer {
+	clear: both;
+	height: 44px;
+	margin-right: -30px;
+	margin-left: -30px;
+	margin-top: 0px;
+	margin-bottom: -30px;
+	background: #ddd;
+	background: -moz-linear-gradient(top, #fff, #ddd);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#ddd) );
+	text-decoration: none;
+	list-style-type: none;
+}
+
+#disclaimer p {
+	font-size: 0.8em;
+	float: right;
+}
+
+#idmxMailigList li {
+	background-image: url(img/minus.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+	list-style-type: none;
+	padding: 5px 0px 5px 30px;
+	margin-left: -10px;
+}
+
+.credStruct {
+	clear: right;
+	margin: auto;
+	width: 400px;
+	padding-top: 5px;
+	background: #eee;
+	-moz-box-shadow: 1px 1px 3px #292929;
+	-webkit-box-shadow: 1px 1px 3px #292929;
+	width: 400px;
+}
+
+.hacked {
+	min-height: 130px;
+}
+
+table {
+	margin: auto;
+}
+
+.attribute {
+	text-align: right;
+}
+
+.submitButton {
+	margin-top: 10px;
+	margin-left: 260px;
+	margin-bottom: 10px;
+	padding: 3px;
+}
+
+/* For the download page... */
+div#license {
+	border: 1px solid #999;
+	padding: 20px;
+}
+
+input.button {
+	padding: 8px;
+	margin: 0px 10px;
+}
+
+div#buttons {
+	margin: auto;
+	text-align: center;
+	width: 100%;
+}
+
+form#buttons {
+	margin-top: 10px;
+	padding: 0px 10px 10px 10px;
+	border: 1px solid #999;
+	background: -moz-linear-gradient(top, #fff, #ddd);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#ddd) );
+}
+/* ------------------------- */
