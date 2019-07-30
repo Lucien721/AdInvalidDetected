@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+    {% block content %}
+        <h1>Sign Up</h1>
+        <form action = '{{ url_for("register") }}' method="POST" name="register">
+            {{ form.csrf_token }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=30) }}<br>
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=30) }}<br>
+            </p>
+            <p>
+                {{ form.phoneNumber.label }}<br>
+                {{ form.phoneNumber(size=30) }}<br>
+            </p>
+            <p><input type="submit" value="Sign Up"></p>
+        </form>
+        <h2>{{msg}}</h2>
+    {% endblock %}

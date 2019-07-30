@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+    {% block content %}
+        {% if logged == 'False' %}
+        <a href="\login">Sign In</a>
+        <a href="\register">Sign Up</a>
+        {% endif %}
+        <a href="\publish">Publish Advert</a>
+        <a href="\list">Data List</a>
+        <div>
+            {% if logged == 'True' %}
+            <h2>用户：{{username}}</h2>
+            <a href="\logout">Log Out</a>
+            {% endif %}
+        </div>
+        <div>
+            {% for (imageID, image) in images %}
+            <div style="width:400px;height:500px;float:left;">
+                <img src="{{image}}"><br/>
+                <p>advert ID: {{imageID}}</p>
+                <a href='\advert\{{imageID}}'>查看广告</a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endblock %}
